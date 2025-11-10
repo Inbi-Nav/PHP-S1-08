@@ -4,65 +4,70 @@ require_once 'Library.php';
 class LibraryManager {
     private $books = [];
     
-    public function addBook(Library $book): void {
+    public function addBook($book) {
         $this->books[] = $book;
     }
     
-    public function removeBook(string $isbn): bool {
-        foreach ($this->books as $index => $book) {
-            if ($book->ISBN === $isbn) {
-                unset($this->books[$index]);
-                $this->books = array_values($this->books);
-                return true;
+    public function removeBook($isbn) {
+        $newBooks = [];
+        $removed = false;
+        
+        foreach ($this->books as $book) {
+            if ($book->ISBN != $isbn) {
+                $newBooks[] = $book;
+            } else {
+                $removed = true;
             }
         }
-        return false;
+        
+        $this->books = $newBooks;
+        return $removed;
     }
     
-    public function getAllBooks(): array {
+    public function getAllBooks() {
         return $this->books;
     }
     
-    public function findByTitle(string $title): array {
+    public function findByTitle($title) {
         $found = [];
         foreach ($this->books as $book) {
-            if (stripos($book->title, $title) !== false) {
+            if (strtolower($book->title) == strtolower($title)) {
                 $found[] = $book;
             }
         }
         return $found;
     }
     
-    public function findByAuthor(string $author): array {
+    public function findByAuthor($author) {
         $found = [];
         foreach ($this->books as $book) {
-            if (stripos($book->author, $author) !== false) {
+            if (strtolower($book->author) == strtolower($author)) {
                 $found[] = $book;
             }
         }
         return $found;
     }
     
-    public function findByGenre(Genre $genre): array {
+    public function findByGenre($genre) {
         $found = [];
         foreach ($this->books as $book) {
-            if ($book->type === $genre) {
+            if ($book->type == $genre) {
                 $found[] = $book;
             }
         }
         return $found;
     }
     
-    public function findByISBN(string $isbn) {
+    public function findByISBN($isbn) {
         foreach ($this->books as $book) {
-            if ($book->ISBN === $isbn) {
-                return $book; 
+            if ($book->ISBN == $isbn) {
+                return $book;
             }
         }
-        return false;  
+        return null;
     }
     
-    public function getLargeBooks(): array {
+    public function getLargeBooks() {
         $largeBooks = [];
         foreach ($this->books as $book) {
             if ($book->pageNumbers > 500) {
@@ -71,16 +76,5 @@ class LibraryManager {
         }
         return $largeBooks;
     }
-    
-    public function updateBook(string $isbn, Library $updatedBook): bool {
-        foreach ($this->books as $index => $book) {
-            if ($book->ISBN === $isbn) {
-                $this->books[$index] = $updatedBook;
-                return true;
-            }
-        }
-        return false;
-    }
-        
 }
 ?>
